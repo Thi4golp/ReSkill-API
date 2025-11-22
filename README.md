@@ -1,61 +1,158 @@
-ReSkill+
+# ReSkill+ API (Global Solution)
 
-Sobre o Projeto
-A ReSkill+ é uma solução tecnológica desenvolvida como parte de uma plataforma inteligente de requalificação profissional. Alinhada ao tema "O Futuro do Trabalho", a API serve como backend para registrar sessões de estudo provenientes de dispositivos IoT, 
-permitindo o monitoramento de hábitos de aprendizado e a personalização de trilhas de carreira.
+![Build Status](https://dev.azure.com/{SUA_ORG_NO_AZURE}/ReSkill/_apis/build/status/ReSkill-CI?branchName=main)
+## 📋 Sobre o Projeto
+A **ReSkill+** é uma solução tecnológica desenvolvida como parte de uma plataforma inteligente de requalificação profissional, alinhada ao tema "O Futuro do Trabalho". 
+
+Esta API RESTful serve como backend para registrar sessões de estudo (provenientes de dispositivos IoT ou Web), permitindo o monitoramento de hábitos de aprendizado e a personalização de trilhas de carreira. A infraestrutura é totalmente hospedada no Microsoft Azure utilizando serviços PaaS (Platform as a Service).
+
+---
+
+## 👨‍💻 Integrantes do Grupo
+* **Vinícius De Souza Sant Anna** - RM: 556841
+* **Felipe Rosa Peres** - RM: 557636
+* **Pedro Henrique De Souza** - RM: 555533
+
+---
+
+## 🔗 Links Importantes (Entrega)
+* **Azure DevOps (Board, Repos, Pipelines):** [LINK_DA_SUA_ORGANIZACAO_AQUI]
+* **Vídeo de Apresentação (YouTube):** [LINK_DO_VIDEO_AQUI]
+* **URL da API em Produção (Azure Web App):** `https://app-reskill-api-{SEU_NOME}.azurewebsites.net/swagger`
+
+---
+
+## 🏗️ Arquitetura da Solução
+A solução segue uma arquitetura monolítica escalável hospedada em nuvem (PaaS).
+
+* **API:** .NET 8.0 (Web App Service Linux)
+* **Banco de Dados:** Azure SQL Database (SQL Server)
+* **CI/CD:** Azure Pipelines (YAML)
+
+### Diagrama Macro
+![Desenho da Arquitetura](https://via.placeholder.com/800x400?text=Inserir+Desenho+da+Arquitetura+Aqui)
+---
 
 ## 🚀 Tecnologias Utilizadas
-- .NET 8.0 (ASP.NET Core Web API)
-- Entity Framework Core (ORM)
-- SQL Server (Banco de Dados)
-- xUnit (Testes Integrados/Unitários)
-- Swagger/OpenAPI (Documentação)
+* **.NET 8.0** (ASP.NET Core Web API)
+* **Entity Framework Core 8.0** (ORM)
+* **SQL Server / Azure SQL** (Persistência)
+* **xUnit** (Testes Unitários e de Integração)
+* **Swagger/OpenAPI** (Documentação Interativa)
+* **Azure CLI** (Provisionamento de Infraestrutura)
 
-## ⚙️ Funcionalidades e Requisitos Atendidos
+---
 
-1. Boas Práticas REST
-- Implementação completa dos verbos HTTP: `GET`, `POST`, `PUT`, `DELETE`.
-- Paginação: Endpoint de listagem suporta parâmetros `page` e `pageSize`.
-- HATEOAS: As respostas da API incluem links de navegação (`self`, `update`, `delete`) para guiar o cliente.
-- Códigos de status HTTP corretos (`200`, `201`, `404`, etc.).
+## ⚙️ Configuração e Execução Local
 
-2. Monitoramento e Observabilidade
-- Health Check: Endpoint acessível em `/health` para verificar a saúde da aplicação.
-- Logging: Logs implementados no Controller para rastreabilidade de operações.
+### Pré-requisitos
+* .NET SDK 8.0
+* SQL Server (LocalDB ou Docker)
+* Visual Studio 2022 ou VS Code
 
-3. Versionamento da API
-- Versionamento por URL implementado.
-- Rota padrão: `/api/v1/[controller]`.
+### Passo a Passo
+1.  **Clonar o Repositório**
+    ```bash
+    git clone [https://dev.azure.com/](https://dev.azure.com/){SUA_ORG}/ReSkill/_git/ReSkill
+    cd ReSkill
+    ```
 
-4. Persistência de Dados
-- Utilização do SQL Server via Entity Framework Core.
-- Uso de Migrations para controle de versão do banco de dados.
+2.  **Configurar Banco de Dados**
+    Verifique a string de conexão no `appsettings.json`. Para rodar localmente com LocalDB:
+    ```json
+    "ConnectionStrings": {
+        "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=ReSkillDB;Trusted_Connection=True;MultipleActiveResultSets=true"
+    }
+    ```
 
-## 🛠️ Como Rodar o Projeto
+3.  **Aplicar Migrations**
+    No terminal, na raiz do projeto `ReSkill.API`:
+    ```bash
+    dotnet ef database update
+    ```
 
-1. Configurar Banco de Dados:
-   Certifique-se de ter o SQL Server (ou LocalDB) instalado. A connection string padrão está configurada no `appsettings.json`.
+4.  **Executar a Aplicação**
+    ```bash
+    dotnet run --project ReSkill.API
+    ```
+    Acesse o Swagger em: `https://localhost:7226/swagger`
 
-2. Aplicar Migrations:
-   Pelo Console do Gerenciador de Pacotes do Visual Studio, execute:
-   "Update-Database"
+5.  **Rodar Testes**
+    ```bash
+    dotnet test
+    ```
 
-3. Executar a API:
-   Abra a solução no Visual Studio 2022 e execute o projeto ReSkill.API. O Swagger será aberto automaticamente em: https://localhost:7226/swagger
+---
 
-4. Rodar Testes:
-   Utilize o Test Explorer do Visual Studio para executar a suíte de testes ReSkill.Tests
+## 📚 Documentação da API (JSON CRUD)
 
-## 📝 Exemplo de Requisição (JSON)
+Conforme requisitos da entrega, abaixo estão os exemplos de JSON para operações de CRUD nas tabelas do sistema.
 
-Para testar a criação de uma nova sessão de estudo (POST), envie o seguinte JSON no corpo da requisição para o endpoint `/api/v1/Sessions`:
+### 1. Usuários (`tb_users`)
+
+**POST /api/v1/Auth/register** (Cadastro)
+```json
 {
-  "topic": "Estudo de Arquitetura de Software",
+  "email": "fiap@teste.com",
+  "password": "Password123!"
+}
+
+POST /api/v1/Auth/login (Autenticação)
+
+{
+  "email": "fiap@teste.com",
+  "password": "Password123!"
+}
+
+Sessões de Estudo (tb_study_sessions)
+POST /api/v1/Sessions (Criação - Create)
+
+{
+  "topic": "Estudo de Azure DevOps e Pipelines",
+  "durationMinutes": 120,
+  "isCompleted": false
+}
+
+GET /api/v1/Sessions (Listagem - Read) Não requer corpo na requisição. Retorno:
+
+JSON gerado:
+
+{
+  "totalItems": 1,
+  "page": 1,
+  "pageSize": 10,
+  "items": [
+    {
+      "data": {
+        "id": 1,
+        "topic": "Estudo de Azure DevOps e Pipelines",
+        "durationMinutes": 120,
+        "createdAt": "2025-11-22T10:00:00",
+        "isCompleted": false
+      },
+      "links": [ ... ]
+    }
+  ]
+}
+
+PUT /api/v1/Sessions/{id} (Atualização - Update) Exemplo ID 1:
+
+JSON
+
+{
+  "id": 1,
+  "topic": "Estudo de Azure DevOps - Finalizado",
   "durationMinutes": 120,
   "isCompleted": true
 }
 
-## Integrantes do grupo 
-- Vinícius De Souza Sant Anna (556841)
-- Felipe Rosa Peres (557636)
-- Pedro Henrique De Souza (555533)
+DELETE /api/v1/Sessions/{id} (Exclusão - Delete) Não requer corpo na requisição, apenas o ID na URL.
+
+☁️ Deploy (Azure DevOps)
+O deploy é realizado automaticamente via Pipeline CI/CD.
+
+Infraestrutura: Provisionada via script (/scripts/script-infra.sh) utilizando Azure CLI.
+
+Build: O pipeline compila o projeto e roda os testes xUnit.
+
+Release: O artefato gerado é publicado no Azure Web App e as migrações de banco podem ser aplicadas via script SQL (/scripts/script-bd.sql).

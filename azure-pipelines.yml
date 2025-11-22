@@ -1,0 +1,56 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+# 1. Instalar .NET 8
+- task: UseDotNet@2
+  displayName: 'Instalar .NET SDK 8.x'
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+
+# 2. Restore
+- task: DotNetCoreCLI@2
+  displayName: 'Restore Nuget Packages'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+
+# 3. Build
+- task: DotNetCoreCLI@2
+  displayName: 'Build da Solução'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+# 4. Testes (Obrigatório para não perder 15 pontos) [cite: 153]
+- task: DotNetCoreCLI@2
+  displayName: 'Executar Testes Unitários'
+  inputs:
+    command: 'test'
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code Coverage"'
+
+# 5. Publicar Artefatos de Build
+- task: DotNetCoreCLI@2
+  displayName: 'Publicar App (Publish)'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
+
+# 6. Disponibilizar Artefato para o Release
+- task: PublishBuildArtifacts@1
+  displayName: 'Upload do Artefato'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
