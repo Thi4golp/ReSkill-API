@@ -1,5 +1,5 @@
 trigger:
-- master
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -30,7 +30,7 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration) --no-restore'
 
-# 4. Testes (Obrigatório para não perder 15 pontos) [cite: 153]
+# 4. Testes
 - task: DotNetCoreCLI@2
   displayName: 'Executar Testes Unitários'
   inputs:
@@ -38,7 +38,7 @@ steps:
     projects: '**/*Tests/*.csproj'
     arguments: '--configuration $(buildConfiguration) --collect "XPlat Code Coverage"'
 
-# 5. Publicar Artefatos de Build
+# 5. Publicar App
 - task: DotNetCoreCLI@2
   displayName: 'Publicar App (Publish)'
   inputs:
@@ -47,7 +47,15 @@ steps:
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: true
 
-# 6. Disponibilizar Artefato para o Release
+# 6. NOVO: Copiar a pasta Scripts (Onde está o SQL)
+- task: CopyFiles@2
+  displayName: 'Copiar Scripts de Banco'
+  inputs:
+    SourceFolder: 'scripts'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/scripts'
+
+# 7. Upload do Artefato
 - task: PublishBuildArtifacts@1
   displayName: 'Upload do Artefato'
   inputs:
